@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Video Toolkit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card">
+        <h1>Video Toolkit 🛠️</h1>
+        
+        <div class="tabs">
+            <div id="t-mp4" class="tab active" onclick="switchTab('mp4')">MP4</div>
+            <div id="t-mp3" class="tab" onclick="switchTab('mp3')">MP3</div>
+            <div id="t-gif" class="tab" onclick="switchTab('gif')">GIF</div>
+            <div id="t-mute" class="tab" onclick="switchTab('mute')">SANS SON</div>
+        </div>
+
+        <div id="mp4" class="content active">
+            <p>Télécharger la vidéo en haute résolution</p>
+            <form action="/download" method="GET">
+                <input type="text" name="url" placeholder="URL YouTube..." required>
+                <button type="submit" class="btn-mp4">Télécharger Vidéo</button>
+            </form>
+        </div>
+
+        <div id="mp3" class="content">
+            <p>Extraire uniquement l'audio en haute qualité</p>
+            <form action="/mp3" method="GET">
+                <input type="text" name="url" placeholder="URL YouTube..." required>
+                <button type="submit" class="btn-mp3">Télécharger MP3</button>
+            </form>
+        </div>
+
+        <div id="gif" class="content">
+            <p>Extraire un segment en GIF animé</p>
+            <form action="/gif" method="GET">
+                <input type="text" name="url" placeholder="URL YouTube..." required>
+                <div class="gif-inputs">
+                    <input type="text" name="start" placeholder="Début (00:00:00)" value="00:00:00">
+                    <input type="number" name="duration" placeholder="Secs" value="5">
+                </div>
+                <button type="submit" class="btn-gif">Générer GIF</button>
+            </form>
+        </div>
+
+        <div id="mute" class="content">
+            <p>Télécharger la vidéo sans piste audio</p>
+            <form action="/mute" method="GET">
+                <input type="text" name="url" placeholder="URL YouTube..." required>
+                <button type="submit" class="btn-mute">Télécharger (Muet)</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(type) {
+            // Cacher tous les contenus
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            // Dé-sélectionner tous les onglets
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            // Activer le contenu et l'onglet sélectionné
+            const targetContent = document.getElementById(type);
+            const targetTab = document.getElementById('t-' + type);
+            
+            if(targetContent && targetTab) {
+                targetContent.classList.add('active');
+                targetTab.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

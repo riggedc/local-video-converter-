@@ -1,0 +1,62 @@
+const express = require('express');
+const YTDlpWrap = require('yt-dlp-wrap').default;
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const { randomUUID } = require('crypto');
+
+const app = express();
+const PORT = 3000;
+const ytDlp = new YTDlpWrap();
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/download', async (req, res) => {
+    const videoURL = req.query.url;
+    if (!videoURL) return res.status(400).send('URL manquante');
+
+    const tmpFile = path.join(os.tmpdir(), `${randomUUID()}.mp4`);
+
+    try {
+        // 1. Récupère le titre
+        const metadata = await ytDlp.execPromise([
+            videoURL,
+            '--dump-json',
+            '--no-playlist'
+        ]);
+        const info = JSON.parse(metadata);
+        const title = info.title.replace(/[^\w\s]/gi, '');
+
+        console.log(`Téléchargement de : ${title}`);
+
+        // 2. Télécharge dans un fichier temporaire
+        await ytDlp.execPromise([
+            videoURL,
+            '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+            '--merge-output-format', 'mp4',
+            '-o', tmpFile,
+            '--no-playlist'
+        ]);
+
+        console.log(`Envoi du fichier...`);
+
+        // 3. Envoie le fichier au client
+        res.header('Content-Disposition', `attachment; filename="${title}.mp4"`);
+        res.sendFile(tmpFile, (err) => {
+            // 4. Supprime le fichier temp après envoi
+            fs.unlink(tmpFile, () => {});
+            if (err) console.error('Erreur envoi:', err);
+        });
+
+    } catch (err) {
+        fs.unlink(tmpFile, () => {});
+        console.error('Erreur:', err);
+        res.status(500).send('Erreur serveur : ' + err.message);
+    }
+});
+
+app.listen(PORT, () => console.log(`Serveur prêt sur http://localhost:${PORT}`));

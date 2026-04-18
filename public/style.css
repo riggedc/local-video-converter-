@@ -121,3 +121,33 @@ small {
 .btn-mp3:hover {
     background: #e68a00;
 }
+
+
+/* Nouveau bouton upload */
+.btn-upload {
+    background: #4caf50; /* Vert pour différencier */
+}
+
+/* Style pour l'input file un peu plus propre */
+.file-input-wrapper {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+input[type="file"] {
+    border: none;
+    background: transparent;
+    width: 100%;
+}
+
+/* Ajustement pour mobile/petits écrans si trop d'onglets */
+.tabs {
+    flex-wrap: wrap; 
+}
+
+.tab {
+    min-width: 80px;
+}

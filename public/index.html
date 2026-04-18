@@ -15,7 +15,8 @@
             <div id="t-mp4" class="tab active" onclick="switchTab('mp4')">MP4</div>
             <div id="t-mp3" class="tab" onclick="switchTab('mp3')">MP3</div>
             <div id="t-gif" class="tab" onclick="switchTab('gif')">GIF</div>
-            <div id="t-mute" class="tab" onclick="switchTab('mute')">SANS SON</div>
+            <div id="t-mute" class="tab" onclick="switchTab('mute')">MUTE URL</div>
+            <div id="t-upload" class="tab" onclick="switchTab('upload')">UPLOAD</div>
         </div>
 
         <div id="mp4" class="content active">
@@ -27,7 +28,7 @@
         </div>
 
         <div id="mp3" class="content">
-            <p>Extraire uniquement l'audio en haute qualité</p>
+            <p>Extraire uniquement l'audio</p>
             <form action="/mp3" method="GET">
                 <input type="text" name="url" placeholder="URL YouTube..." required>
                 <button type="submit" class="btn-mp3">Télécharger MP3</button>
@@ -35,7 +36,7 @@
         </div>
 
         <div id="gif" class="content">
-            <p>Extraire un segment en GIF animé</p>
+            <p>Extraire un segment en GIF</p>
             <form action="/gif" method="GET">
                 <input type="text" name="url" placeholder="URL YouTube..." required>
                 <div class="gif-inputs">
@@ -47,22 +48,28 @@
         </div>
 
         <div id="mute" class="content">
-            <p>Télécharger la vidéo sans piste audio</p>
+            <p>Télécharger sans son via URL</p>
             <form action="/mute" method="GET">
                 <input type="text" name="url" placeholder="URL YouTube..." required>
                 <button type="submit" class="btn-mute">Télécharger (Muet)</button>
             </form>
         </div>
-    </div>
 
-    <script>
+        <div id="upload" class="content">
+            <p>Retirer le son d'un fichier local</p>
+            <form action="/upload-mute" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <input type="file" name="videoFile" accept="video/*" required>
+                </div>
+                <button type="submit" class="btn-upload" style="background-color: #4CAF50;">Uploader & Traiter</button>
+            </form>
+        </div>
+        
+    </div> <script>
         function switchTab(type) {
-            // Cacher tous les contenus
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            // Dé-sélectionner tous les onglets
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             
-            // Activer le contenu et l'onglet sélectionné
             const targetContent = document.getElementById(type);
             const targetTab = document.getElementById('t-' + type);
             

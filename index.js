@@ -5,6 +5,8 @@ const fs = require('fs');
 const os = require('os');
 const { randomUUID } = require('crypto');
 const ffmpeg = require('fluent-ffmpeg');
+const multer = require('multer'); 
+const upload = multer({ dest: os.tmpdir() });
 
 const app = express();
 const PORT = 3000;
@@ -125,6 +127,28 @@ app.get('/mp3', async (req, res) => {
     } catch (err) {
         res.status(500).send('Erreur MP3 : ' + err.message);
     }
+});
+
+app.post('/upload-mute', upload.single('videoFile'), (req, res) => {
+    if (!req.file) return res.status(400).send('Aucun fichier uploadé.');
+
+    const inputPath = req.file.path;
+    const outputPath = path.join(os.tmpdir(), `${randomUUID()}_muted.mp4`);
+
+    ffmpeg(inputPath)
+        .outputOptions('-an') // Enlever l'audio
+        .on('end', () => {
+            res.header('Content-Disposition', `attachment; filename="video_muette.mp4"`);
+            res.sendFile(outputPath, (err) => {
+                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+                if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+            });
+        })
+        .on('error', (err) => {
+            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+            res.status(500).send('Erreur lors du traitement : ' + err.message);
+        })
+        .save(outputPath);
 });
 
 app.listen(PORT, () => console.log(`Serveur prêt sur http://localhost:${PORT}`));
